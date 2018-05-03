@@ -1,5 +1,7 @@
 FROM library/openjdk:8-jre-alpine
 
+ARG JBOSS_PASSWORD=Today123!
+
 # Set the WILDFLY_VERSION env variable
 ENV WILDFLY_VERSION 12.0.0.Final
 ENV WILDFLY_SHA1 b2039cc4979c7e50a0b6ee0e5153d13d537d492f 
@@ -30,9 +32,11 @@ ENV LAUNCH_JBOSS_IN_BACKGROUND true
 
 USER jboss
 
+RUN /opt/jboss/wildfly/bin/add-user.sh admin ${JBOSS_PASSWORD} --silent
+
 # Expose the ports we're interested in
 EXPOSE 8080
 
 # Set the default command to run on boot
 # This will boot WildFly in the standalone mode and bind to all interface
-CMD ["/opt/jboss/wildfly/bin/standalone.sh", "-b", "0.0.0.0"]
+CMD ["/opt/jboss/wildfly/bin/standalone.sh", "-b", "0.0.0.0", "-bmanagement", "0.0.0.0"]
